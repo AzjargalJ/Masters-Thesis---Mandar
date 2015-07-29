@@ -1,0 +1,70 @@
+\chapter{Architecture}
+\label{cha:2}
+
+Figure \ref{fig:struct} shows the organization of modules in FS-Scala. It can be decomposed into five principal modules:
+\begin{itemize}
+\item Model Classes:
+This is the core set of classes which form the heart of the library, a number of abstract model categories are defined each with its own set of defined behaviours. 
+\item Optimization application programming interface (API):
+A module which houses the implementation of common optimization methods (i.e. Gradient and Gradient free). Currently FS-Scala has implementations for Conjugate Gradient, Gradient Descent, Grid Search and Coupled Simulated Annealing \cite{Xavier-De-Souza2010} (CSA). 
+\item Kernels:
+FS-Scala is equipped with a powerful abstract API for representing kernel functions. The module has two abstract classes to outline the behaviors of kernels used in SVM based applications as well as density estimation. The library comes bundled with an implementation for AFE as well as for common SVM kernels i.e. Linear, Radial Basis Function (RBF), Polynomial, Laplace, Exponential. New kernel functions can be easily added to the library by extending the base classes in this module.
+\item Evaluation Metrics:
+We have implemented evaluation metrics for Binary Classification and Regression problems. Further more, the implementation of binary classification performance expressed as the area under Receiver Operating Characteristic (ROC), is carried out using \textit{MapReduce} in a \textit{single pass} fashion through the evaluation data points, which can be seen in algorithm \ref{efmr}. Calculating the area under the ROC curve in a \textit{single pass} fashion greatly increases the speed of the eventual FS-LSSVM source code.
+\item Miscellaneous Utilities:
+This module contains code to carry out auxiliary tasks for model learning and optimization. It contains the implementation of entropy calculation, summary statistics, prototype selection as well as a set of various functions which can be required for implementing new model classes using the library.  
+
+\end{itemize}
+
+The FS-Scala software is available at \cite{fsscala}.
+
+
+
+\begin{figure}[h] 
+\begin{adjustbox}{max width=0.85\textwidth}
+\begin{tikzpicture} [mindmap, grow cyclic, every node/.style=concept, concept color=orange!40, 
+    level 1/.append style={level distance=4cm,sibling angle=72},
+    level 2/.append style={level distance=3cm,sibling angle=45},]
+\node{FS-Scala}
+   child [concept color=blue!30]{ node {Model Classes}
+        child { node {LSSVM Spark Model}}
+        child { node {Kernel Spark Model}}
+    }
+    child [concept color=brown!30]{ node {Kernels}
+        child { node {Mercer Kernels}}
+        child { node {Density Estimation Kernels}}
+    }
+    child [concept color=teal!30]{ node {Optimization}
+        child { node {Gradient Based}}
+        child { node {Conjugate Gradient}}
+        child { node {Global Optimization}}
+    }
+    child [concept color=purple!30]{ node {Evaluation Metrics}
+        child { node {Classification}}
+        child { node {Regression}}
+    }
+    child [concept color=green!30]{ node {Miscellaneous Utilities}
+        child { node {Prototype Selection}}
+        child { node {Summary Statistics}}
+        child { node {Entropy Computation}}
+    };
+
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Schematic structure of FS-Scala}
+\label{fig:struct}
+\end{figure}
+
+
+
+\section{Conclusion}
+The final section of the chapter gives an overview of the important results
+of this chapter. This implies that the introductory chapter and the
+concluding chapter don't need a conclusion.
+
+\lipsum[66]
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End: 

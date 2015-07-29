@@ -1,0 +1,118 @@
+\chapter{FS-Scala Class Hierarchies}
+\label{app:A}
+Figures \ref{fig:modelUML} and \ref{fig:modelUML1} depict the class hierarchy structures of the core and optimization modules respectively, we can discuss their role in depth.
+
+\section{Core Components}
+The core module consists of a set of classes which all originate from a base abstraction called \textit{Model}. It also has classes \textit{ParameterizedLearner} and \textit{LinearModel} representing the core behaviors of parameter based Machine Learning models which form a large chunk of current learning techniques. By using generic typing inherent in the Scala language, one is able to separate the logic of a model from the details of the underlying data infrastructure. This is particularly relevant due to the explosion of data processing frameworks and systems like graph databases, Apache Spark, key value stores, column oriented databases, etc.
+
+\subsection*{Kernel Functions and Kernel Based Models}
+The kernel module contains implementations of SVM kernels and AFE. The class \textit{KernelizedModel} defines kernel based linear models which use the \textit{GlobalOptimizer} class to tune values of hyper-parameters. The actual implementation of the \textit{Automatic Feature Extraction} is abstracted out in the parent classes, thereby reducing the effort of writing new SVM kernels to merely expressing their evaluation functions.
+
+
+\begin{figure}[!ht]
+\begin{adjustbox}{max width=0.85\textwidth}
+\begin{tikzpicture}
+    \begin{interface}[text width =3 cm]{Model}{0 ,0}
+        \attribute { g : G }
+    \end{interface}
+    
+    \begin{interface}[]{ParameterizedLearner}{ 0 , -3}
+        \implement{Model}
+        \attribute{params : Q}
+        \attribute{optimizer : RegularizedOptimizer}
+        \operation{learn() }
+    \end{interface}
+    
+    \begin{interface}[]{EvaluableModel}{ 6 , 0}
+        \operation{evaluate(config: Map[String, String]) }
+    \end{interface}
+    
+    \begin{abstractclass}[text width =3 cm]{LinearModel}{6 , -3}
+        \implement{ParameterizedLearner}
+        \implement{EvaluableModel}
+        \operation{predict(point) }
+        \operation{clearParameters() }
+    \end{abstractclass}
+    
+    \begin{interface}[]{GloballyOptimizable}{ 6 , -7}
+        \attribute{hyper\_parameters: List[String]}
+        \attribute{current\_state: Map[String, Double]}
+        \operation{energy(h: Map[String, Double], options: Map[String, String]) }
+    \end{interface}
+    
+    \begin{abstractclass}[]{KernelizedModel}{0 , -7}
+        \inherit{LinearModel}
+        \implement{GloballyOptimizable}
+        \attribute{nPoints: Long}
+        \attribute{prototypes: List[Long]}
+        \operation{featureMap(point: Q)}
+        \operation{applyKernel(kernel: SVMKernel) }
+        \operation{crossvalidate(folds: Int, reg: Double)}
+        \operation{applyFeatureMap()}
+    \end{abstractclass}
+    
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Class Hierarchy of Core Models API}
+\label{fig:modelUML}
+\end{figure}
+
+\section{Optimization Methods}
+Parametric models in FS-Scala have an embedded optimization object which is inherits from the \textit{Optimizer} interface. Implementations of Conjugate Gradient and Gradient Descent are provided in the optimization module. New optimization algorithms can be added by inheriting from the top level \textit{Optimizer} interface or the \textit{RegularizedOptimizer} abstract class in case one is working with parametric models which involve regularization. Another important component of the optimization module is the \textit{GlobalOptimizer} interface which acts as a skeleton for implementing gradient free global optimization algorithms.
+
+\begin{figure}[!ht]
+\begin{adjustbox}{max width=0.85\textwidth}
+\begin{tikzpicture}
+    \begin{interface}[]{Optimizer}{0 ,0}
+        \operation{optimize(nPoints: Long, data: S, initialParams: P)}
+    \end{interface}
+    
+    \begin{abstractclass}[]{RegularizedOptimizer}{6 , 0}
+        \implement{Optimizer}
+        \attribute{regParam: Double}
+        \attribute{numIterations: Double}
+        \attribute{batchfraction: Double}
+    \end{abstractclass}
+    
+    \begin{class}[]{GradientDescent}{ 0 , -4}
+        \inherit{RegularizedOptimizer}
+    \end{class}
+    
+    \begin{class}[]{ConjugateGradient}{6 , -4}
+        \inherit{RegularizedOptimizer}
+    \end{class}
+    
+    \begin{interface}[]{GlobalOptimizer}{ 0 , -6}
+        \attribute{system: GloballyOptimizable}
+        \operation{optimize(initialConfig: Map[String, Double], options: Map[String, String])}
+    \end{interface}
+    
+    \begin{class}[]{GridSearch}{6 , -6}
+        \inherit{GlobalOptimizer}
+        \attribute{step: Double}
+        \attribute{gridsize: Double}
+        \attribute{logScale: Boolean}
+    \end{class}
+    
+    \begin{class}[]{CoupledSimulatedAnnealing}{6 , -9}
+        \inherit{GridSearch}
+        \attribute{numIterations: Double}
+        \operation{acceptance(energy: Double, coupling: Double, temperature: Double)}
+        \operation{mutate(config: Map[String, Double], temperature: Double)}
+        \operation{acceptanceTemperature(t: Double)(k: Int)}
+        \operation{mutationTemperature(t: Double)(k: Int)}
+    \end{class}
+    
+    
+    
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Class Hierarchy of Optimization API}
+\label{fig:modelUML1}
+\end{figure}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End: 
