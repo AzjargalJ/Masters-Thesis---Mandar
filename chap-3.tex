@@ -46,7 +46,7 @@ Using \textit{MapReduce}, we calculate $A = \hat{\Phi}^{\intercal}_e \hat{\Phi}_
         $(F, v) \longleftarrow FeatureMat(X, Y, \hat{\phi}, \gamma)$ \;
         $A \longleftarrow F + \frac{1}{\gamma} \mathbf{I}_{m \times m}$\;
         \BlankLine
-        \nl\While{not $max iterations$ and $\Delta(\hat{w}, \hat{b}) >= \epsilon$}{
+        \nl\While{not $max iterations$ and $\Delta(\hat{w}, \hat{b}) \geq \epsilon$}{
             $(\hat{w}_{i+1}, \hat{b}_{i+1}) \longleftarrow CGUpdate(\hat{w}_{i}, \hat{b}_{i}, A, v)$\;
             $\Delta(\hat{w}, \hat{b}) \longleftarrow \left \| \hat{w}_{i+1}  - \hat{w}_{i}\right \|^2 + \left \| \hat{b}_{i+1}  - \hat{b}_{i}\right \|^2$
         }
