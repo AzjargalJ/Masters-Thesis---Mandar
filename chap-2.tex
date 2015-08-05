@@ -1,7 +1,143 @@
 \chapter{FS-Scala}
 \label{cha:2}
 
-\section{Architecture}
+\section{Scientific Computing: An Overview}
+The term \textit{Scientific Programming} must be interpreted with proper context, as the very first applications of the primitive computational infrastructure developed during the second world war were conducting numerical simulations of various engineering problems of practical significance. It must thus be recognized that only after large scale adoption of computers for business applications became popular, that the term \textit{Scientific Computing} became relevant as a sub-domain of Computer Science.
+
+Nevertheless it is instructive to take a quick glance at the history of programming languages in order to motivate the design philosophy behind \textit{FS-Scala} and the \textit{MapReduce} computational paradigm which has been applied extensively in modern large scale data processing frameworks.
+
+We classify programming languages on two broad issues, for an in-depth treatment of the subject one may refer to some of the canonical texts in the area \cite{Sethi:1989}.
+
+\begin{itemize}
+\item Translation to Machine level code.
+Programs written in any language have to be translated to low level machine readable instructions or codes, this may be achieved in two ways.
+\begin{itemize}
+\item Compilation: The high level program is "compiled" or translated into low level executable code, this is achieved in various ways on different platforms (i.e. .exe file on Windows based systems, .sh files on *nix systems). Note that this process has to be done once and the executable code can be run many times.
+
+\item Interpretation: Instead of translating the high level code before hand, an interpreter translates all the content of a program into low level instructions every time it is executed.
+
+\end{itemize}
+
+\item Paradigms.
+
+\begin{itemize}
+\item Imperative Programming.
+Programs consist of instructions which modify a given 'state', which may refer to a memory location or variable.
+\item Object Oriented Programming (OOP).
+Programs consist of entities called 'objects' which contain data, called 'fields' and subroutines to modify their data.
+\item Functional Programming (FP).
+Programs consist of expressions which take input and output the results, its worth noting that the input and output data structures are immutable. It is worth noting that in Functional Programming one may pass a function itself as an argument to another function/subroutine, this behavior is colloquially referred to by the phrase "code as data". 
+\end{itemize}
+\end{itemize}
+
+There are advantages and limitations of each programming language or paradigm, which must be understood before choosing one for a particular application. It is well known that compiled languages have much better performance than interpreted languages, though one must keep in mind that being compiled or interpreted are not inherent characteristics of the languages themselves rather practical implementation details. This advantage that languages like C and Fortran possess is evidenced in the fact that much of the Python scientific programming frameworks use underlying C or Fortran primitives for fast computation, \textit{scikit-learn} \cite{scikit-learn} being the best example.
+
+So far \textit{Python} and \textit{MATLAB} have been the dominant languages used in computation for engineering and science applications, this is because of their ease of learning with respect to syntax and the ready availability of packages which can be used to extend their capability for specific applications like signal processing (in \textit{MATLAB}) and Natural Language Processing (see \textit{NLTK} \cite{NLTK} ) in \textit{python}.
+
+While \textit{python} and \textit{MATLAB} are convenient for quick prototyping of new algorithms and models, for production machine learning systems their performance makes them unsuitable for those applications. The most common languages used for production systems are \textit{C/C++} and \textit{Java}. The Java Virtual Machine (JVM) has become a standard platform for enterprise applications in the past two decades. The \textit{Apache Hadoop} and \textit{Mahout} big data and machine learning frameworks are written entirely in \textit{Java}. As such, the JVM offers a sound platform for future efforts in large scale machine learning. One of the recent developments has been the development of JVM based languages which have embraced the FP paradigm along with the inherent Object Oriented (OO) nature of the \textit{Java} language and the JVM.
+
+\subsection*{Scala, MapReduce and Data Processing}
+
+
+\begin{figure}[ht] 
+\begin{adjustbox}{max width=0.85\textwidth}
+\begin{tikzpicture}[mindmap,
+  level 1 concept/.append style={level distance=110,sibling angle=40},
+  extra concept/.append style={color=blue!50,text=black}]
+
+  % Applied area: computer science and its subfields
+
+  \begin{scope}[mindmap, concept color=orange, text=white]
+    \node [concept] (comp) {Compiled}[clockwise from=3]
+        child {node [concept] (c) {C}}
+        child {node [concept] (java) {Java}}
+        child {node [concept] (fortran) {Fortran}}
+        child[level distance=140] {node [concept] (julia) {Julia}}
+        child {node [concept] (scala) {Scala}};
+  \end{scope}
+  
+  \begin{scope}[mindmap, concept color=blue]
+    \node [concept, text=white] (int) at (15,-14) {Interpreted}
+        child [concept color=blue!50, grow=85, level distance=190] 
+            {node [concept] (matlab) {MATLAB}}
+        child [concept color=blue!50, grow=130, level distance=120] 
+            {node [concept] (py) {Python}}
+        child [concept color=blue!50, grow=190, level distance=120] 
+            {node [concept] (r) {R}};
+  \end{scope}
+
+  \begin{scope}[mindmap, concept color=red,text=white]
+    \node [concept] (fp) at (-2.5,-13) {Functional};
+  \end{scope}
+
+  \begin{scope}[mindmap, concept color=green!50!black,text=white]
+    \node [concept] (oop) at (4,-8.5) {Object Oriented};
+  \end{scope}
+
+  \begin{scope}[mindmap, concept color=violet, text=white]
+    \node [concept] (imp) at (11,-2.5) {Imperative};
+  \end{scope}
+
+  \begin{pgfonlayer}{background}
+    \draw [circle connection bar]
+        (java) edge (oop)
+        (java) edge (imp)
+        (fp) edge (scala)
+        (scala) edge (oop)
+        (c) edge (imp)
+        (py) edge (oop)
+        (py) edge (fp)
+        (py) edge (imp)
+        (r) edge (fp)
+        (r) edge (oop)
+        (julia) edge (fp)
+        (julia) edge (oop)
+        (matlab) edge (fp)
+        (matlab) edge (oop)
+        (matlab) edge (imp)
+        (fortran) edge (oop)
+        (fortran) edge (imp);
+      
+  \end{pgfonlayer}
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Overview of Scientific Computing Languages}
+\label{fig:scilang}
+\end{figure}
+
+\section{SVM Software: The state of the art}
+
+Since its inception, there have been a number of implementations of the classical soft-margin SVM, one can find a diverse list of software at \cite{SVMSoft}. Notable implementations include \textit{LibSVM} \cite{LibSVM}, \textit{SVM\textsuperscript{Light}} \cite{SVMLight} and \textit{mySVM} \cite{mySVM} among others. With respect to the LSSVM there is an implementation by Suykens et.al \cite{LSSVMLab} called \textit{LSSVMLab} written in \textit{MATLAB}. Below we review salient features of a select subset of SVM software implementations.
+
+\begin{itemize}
+\item LibSVM: A C/C++ software package that supports Support Vector Classification (C-SVC and \textnu-SVC),  Regression (\textepsilon-SVR and \textnu-SVR) and Density Estimation. It supports binary as well as multi-class classification. Weighted training for unbalanced data sets, along with support for kernels (precomputed and non precomputed kernel matrices). It also supports Sequential Minimal Optimization (SMO) based training of SVM models. One of the most popular SVM implementations with several language ports and multiple libraries (ex. Scikit Learn \cite{scikit-learn}) which use it as a back-end SVM model builder. 
+
+\item SVM\textsuperscript{Light}: A C based software package that aims to reduce the training times for SVM models using faster optimization algorithms which are achieved by a combination of kernel evaluation caching, heuristics and support vector selection based on \textit{steepest feasible descent}. Recently a new implementation \textit{SVM\textsuperscript{perf}} has also been introduced to further speed up model training compared to \textit{SVM\textsuperscript{light}} for large data sets and to optimize multivariate performance measures like F1 measure, ROC area, etc. For an implementation applicable to structures like trees, one can also use SVM\textsuperscript{struct}. 
+
+\item Apache Spark SVM: This SVM model implementation exists as a part of the \textit{MLLib} machine learning library in the \textit{Apache Spark} big data and cluster computing platform. It is one of the several linear models that are offered in this libraries. \textit{MLLib} comes bundled with optimization algorithms such as SGD and L-BFGS.
+
+
+\item LSSVMLab: A MATLAB software toolbox to train and test LSSVM models. It has support for kernels as well as Bayesian LSSVM formulations which calculate posterior probability of a model or set of hyper-parameters.
+
+\end{itemize}
+
+\section{FS-Scala: Motivation and Design}
+FS-Scala tackles three major issues w.r.t. the implementation of the FS-LSSVM:
+
+\begin{itemize}
+\item \textbf{Tuning Kernel Models}:
+Since the performance of kernel based models is sensitive with respect to the choice of hyper-parameters, one has to choose a mechanism of model selection or hyper-parameter optimization. In FS-Scala, we implement the Grid Search and Coupled Simulated Annealing global optimization algorithms for model tuning.
+
+\item \textbf{Parallel Computation}\label{mr}:
+Big Data analysis requires the distribution of computational work load, \textit{MapReduce} is the dominant paradigm employed for writing distributed data processing programs. In FS-Scala we leverage \textit{MapReduce} to distribute the computation in the pre-processing, training and cross-validation tasks.
+
+\item \textbf{Infrastructure Flexibility}:
+The big data landscape has many tools which enable the storage and analysis of large streams of data, they consist of technologies such as, but not limited to \textit{Apache Spark}, \textit{Hadoop}, Graph Databases like \textit{Titan} \cite{Titan:2014}, \textit{OrientDB} \cite{OrientDB:2010}, \textit{Neo4j} \cite{Neo4j:2010}. Creating a powerful framework for model training and evaluation requires the decoupling of storage and processing infrastructure from the actual logic that implements the architecture of learning models.
+\end{itemize}
+
+The implementation of the FS-LSSVM in FS-Scala, outlined in algorithm \ref{lssvmalgo}, chapter \ref{cha:1} is as described in the original article of De Brabanter et al. \cite{DeBrabanter2010}. Kernel based models all implement the interface \textit{GloballyOptimizable} in the optimization module (see Figure \ref{fig:modelUML1}). Since the \textit{GlobalOptimizer} and its subclasses (i.e. \textit{GridSearch} and \textit{CoupledSimulated Annealing}) all optimize models which implement the \text{GloballyOptimizable} interface, it enables tuning of models with a variety of global optimization algorithms convenient.
+
+\subsection*{Architecture}
 Figure \ref{fig:struct} shows the organization of modules in FS-Scala. It can be decomposed into five principal modules:
 \begin{itemize}
 \item Model Classes:
@@ -21,7 +157,7 @@ The FS-Scala software is available at \cite{fsscala}.
 
 
 
-\begin{figure}[h] 
+\begin{figure}[ht] 
 \begin{adjustbox}{max width=0.85\textwidth}
 \begin{tikzpicture} [mindmap, grow cyclic, every node/.style=concept, concept color=orange!40, 
     level 1/.append style={level distance=4cm,sibling angle=72},
@@ -57,13 +193,6 @@ The FS-Scala software is available at \cite{fsscala}.
 \end{figure}
 
 
-
-\section{Conclusion}
-The final section of the chapter gives an overview of the important results
-of this chapter. This implies that the introductory chapter and the
-concluding chapter don't need a conclusion.
-
-\lipsum[66]
 
 %%% Local Variables: 
 %%% mode: latex

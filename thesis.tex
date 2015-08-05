@@ -8,10 +8,7 @@
 \setup{filingcard,
   translatedtitle=,
   udc=621.3,
-  shortabstract={Here comes a very short abstract, containing no more than 500
-    words. \LaTeX\ commands can be used here. Blank lines (or the command
-    \texttt{\string\pa r}) are not allowed!
-    \endgraf \lipsum[2]}}
+  shortabstract={We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implementation of the Fixed Size Least Squares Support Vector Machine (FS-LSSVM) for large data sets. The framework consists of a set of modules for (gradient and gradient free) optimization, model representation, kernel functions and evaluation of FS-LSSVM models. A kernel based \textit{Fixed-Size Least Squares Support Vector Machine} (FS-LSSVM) model is implemented in the proposed framework, while heavily leveraging the parallel computing capabilities of \textit{Apache Spark}. Global optimization routines like \emph{Coupled Simulated Annealing} (CSA) and \emph{Grid Search} are implemented and used to tune the hyper-parameters of the FS-LSSVM model. Finally, we carry out experiments on benchmark data sets like \emph{Magic Gamma} and \emph{Adult} and evaluate the performance of various kernel based FS-LSSVM models.}}
 % Uncomment the next line for generating the cover page
 %\setup{coverpageonly}
 % Uncomment the next \setup to generate only the first pages (e.g., if you
@@ -26,20 +23,28 @@
 % Finally the hyperref package is used for pdf files.
 % This can be commented out for printed versions.
 \usepackage[pdfusetitle,colorlinks,plainpages=false]{hyperref}
-\usepackage{graphicx, blindtext, tikz, csvsimple, adjustbox}
+\usepackage{blindtext, tikz, csvsimple, adjustbox}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \interdisplaylinepenalty=2500
 \usepackage{tikzscale, adjustbox}
+
 \usepackage[school]{pgf-umlcd}
 \usepackage[ruled,vlined,linesnumbered,inoutnumbered]{algorithm2e}
 \usepackage{verbatim} 
 \usepackage{booktabs} % For \toprule, \midrule and \bottomrule
+
 \usepackage{siunitx} % Formats the units and values
 \usepackage{pgfplotstable} % Generates table from .csv
 \usepackage{datatool}
-\usetikzlibrary{mindmap, positioning,shapes,shadows,arrows}
+
+\usepackage{textgreek}
+
+\usepackage{times}
+%\usepackage{geometry}
+
+\usetikzlibrary{mindmap, backgrounds,positioning,shapes,shadows,arrows}
 \sisetup{
   round-mode          = places, % Rounds numbers
   round-precision     = 2, % to 2 places
@@ -89,6 +94,14 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
     API  & Application Programming Interface \\ 
     KKT  & Karush Kuhn Tucker \\
     RHKS & Reproducing Kernel Hilbert Space\\
+    SVC & Support Vector Classification\\
+    SVR & Support Vector Regression\\
+    SMO & Sequential Minimal Optimization\\
+    QP & Quadratic Programming\\
+    ROC & Receiver Operating Characteristic\\
+    OOP & Object Oriented Programming\\
+    FP & Functional Programming\\
+    JVM & Java Virtual Machine\\
   \end{tabularx}
 \end{flushleft}
 \section*{Symbols}
