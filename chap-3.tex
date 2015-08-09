@@ -3,126 +3,52 @@
 
 \section{Map Reduce}
 
+Although \textit{MapReduce} \cite{MapReduce} has been the focal point of the large scale machine learning surge, as a computational paradigm it is hardly new. Programming languages with FP capabilities (ex. Haskell, Scheme, Scala) have operations \texttt{map} and \texttt{reduce} on various data immutable (and sometimes mutable) data structures like Maps, Lists, Arrays, etc. One can argue that \textit{MapReduce} which relies on the "code as data" philosophy is quite inherent in the FP paradigm.
+
+It is worthwhile to note that despite the novelty in the current distributed implementations of \textit{MapReduce} like \textit{Apache Hadoop} \cite{Hadoop:2005} and \textit{Apache Spark} have gained popularity because of their ability to distribute these computations across massive clusters. We inspect \textit{Map Reduce} in more detail to understand how this capability is achieved. Figure \ref{fig:mapreduce} below shows a schematic picture of distributed \texttt{MapReduce}.
+
+\tikzstyle{block} = [draw,fill=blue!20,minimum size=2em]
+% diameter of semicircle used to indicate that two lines are not connected
+\def\radius{.7mm} 
+\tikzstyle{branch}=[fill,shape=circle,minimum size=3pt,inner sep=0pt]
+\begin{figure}[!ht] 
+\begin{adjustbox}{max width=\textwidth}
+\begin{tikzpicture}[>=latex']
+    \node (rect) at (0,-1) [draw,thick,fill=blue!20,minimum width=5em,minimum height=14em] {data};
+    % Draw blocks, inputs and outputs
+    \foreach \y in {1,2} {
+        \node[block] at (10,-\y+0.5) (red\y) {$reduceTask_\y$};
+        \draw[->] (red\y.east) -- +(0.5,0);
+    }
+    
+    \foreach \y in {1,2,3,4,5} {
+        \node[block] at (5,-\y+2) (map\y) {$mapTask_\y$};
+        \draw[->] (rect) -- (map\y);
+        \draw[->] (map\y.east) -- (red1.west);
+        \draw[->] (map\y.east) -- (red2.west);
+    }
+
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Schematic Diagram of Distributed Map Reduce}
+\label{fig:mapreduce}
+\end{figure}
+
+It can be broadly divided into two major phases or steps, although there are more phases that can be optionally applied, the reader is urged to refer to references in this area for a more in-depth explanation \cite{HDFS}, \cite{HadoopBook} \cite{Yarn}.
+
+\begin{itemize}
+\item \textit{Map}: Each file is divided into splits, on each node/split a \texttt{map} function (of the form $V \longrightarrow W$) which is self contained (it is assumed to be independent of data on other splits) is applied on each data split. Due to this inter-partition \texttt{map} operation independence, this phase can be carried out in a (massively) parallel fashion.
+
+\item \textit{Reduce}: This consists of application of the so called \texttt{reduce} function which is of the form $W \times W \longrightarrow W$, it "combines" or "merges" two quantities/entities which are outputs of the \texttt{map} function in some meaningful way. In order for this phase to be implemented in parallel, it is required that this \texttt{reduce} function be associative in the algebraic sense, although commutativity is not a requirement of this function, it allows for further distributed optimization of this computation.
+
+\item \textit{Combine} (Optional): This is an optional phase which may be applied before the \textit{Reduce} phase, it is a function called \texttt{combine} whose functional signature is identical to that of the \texttt{reduce} function, its utility is primarily reducing the overhead on the \textit{Reduce} phase by preprocessing the intermediate output of the \texttt{map} functions. 
+\end{itemize}
+
+
+\section{Application in FS-Scala}
+
 As discussed above, we use \textit{MapReduce} wherever possible in order to distribute the workload using \textit{Apache Spark}. Due to the primal formulation of the FS-LSSVM, the size of matrix $A =  \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ , in the linear system in \eqref{eqfssol} is $(m+1) \times (m+1)$, where $m$ is the number of prototypes selected to construct the kernel matrix in kernel based FS-LSSVM. Procedure \ref{cgmr} outlines the procedure to estimate the parameters $\hat{w},\ \hat{b}$ of the FS-LSSVM model discussed in section \ref{sec:fs}, using the \textit{Conjugate Gradient} algorithm. 
 
 Using \textit{MapReduce}, we calculate $A = \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ and $\hat{\Phi}^{\intercal}_e Y$. We use these results to carry out iterations of the Conjugate Gradient updates until the maximum number of iterations is reached.
 
-\begin{algorithm}[t]\label{fmmr}
-    \DontPrintSemicolon
-    \KwData{$X = [x^i],\ x^i\ \epsilon \ \mathbf{R}^n$, 
-    $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 
-    $Y = [y^i], y^i \epsilon \mathbf{R}$}
-    \KwResult{$\left ( \hat{\Phi}^{\intercal}_e \hat{\Phi}_e \right ),\ \hat{\Phi}^{\intercal}_e Y$}
-    \Begin{
-        $MapFn(x, y)$:\;
-        \ \   $M \longleftarrow \hat{\phi}(x) \hat{\phi}(x)^T$\;
-        \ \   $v \longleftarrow \hat{\phi}(x) \ y$\;
-        $emit(M,v)$\;
-    }
-    \Begin{
-        $RedFn((M, v), (M', v'))$:\;
-        $emit(M + M', v + v')$\;
-    }
-    \Begin{
-        $(F, v) \longleftarrow MapReduce(X, MapFn, RedFn)$\;
-        
-        return $(F, v)$\;
-    }
-\caption{Calculate feature matrices from data using MapReduce: $FeatureMat$}
-\end{algorithm}
-
-
-\begin{algorithm}[t]\label{cgmr}
-    \DontPrintSemicolon
-    \KwData{$X = [x^i],\ x^i\ \epsilon \ \mathbf{R}^n$, 
-    $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 
-    $Y = [y^i], y^i \epsilon \mathbf{R}$, $\gamma$, $\epsilon$}
-    \KwResult{$\left( \begin{matrix}
-\hat{w}\\ 
-\hat{b}
-\end{matrix}\right ) = 
-\left ( \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma} \right )^{-1} \hat{\Phi}^{\intercal}_e Y$}
-    \Begin{
-        $(F, v) \longleftarrow FeatureMat(X, Y, \hat{\phi}, \gamma)$ \;
-        $A \longleftarrow F + \frac{1}{\gamma} \mathbf{I}_{m \times m}$\;
-        \BlankLine
-        \nl\While{not $max iterations$ and $\Delta(\hat{w}, \hat{b}) \geq \epsilon$}{
-            $(\hat{w}_{i+1}, \hat{b}_{i+1}) \longleftarrow CGUpdate(\hat{w}_{i}, \hat{b}_{i}, A, v)$\;
-            $\Delta(\hat{w}, \hat{b}) \longleftarrow \left \| \hat{w}_{i+1}  - \hat{w}_{i}\right \|^2 + \left \| \hat{b}_{i+1}  - \hat{b}_{i}\right \|^2$
-        }
-    }
-\caption{Conjugate Gradient: $CG$}
-\end{algorithm}
-
-
-\begin{algorithm}[!htbp]\label{efmr}
-    \DontPrintSemicolon
-    \KwData{$X_f = [x^i],\ x^i\ \in \ \mathbf{R}^n$, 
-    $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 
-    $Y_f = [y^i], y^i \in \mathbf{R}$, $\hat{w}$, $\hat{b}$.}
-    \KwResult{score for given fold}
-    \Begin{
-        $predictLabel(\hat{w}, \hat{b})(x, y)$:\;
-        $emit(\hat{w}\cdot x + \hat{b},y)$\;
-    }
-    \Begin{
-        $Vector.fill(length)(IndicatorFn)$:\;
-        $vec \longleftarrow (0, ..., 0)_{length} \ map (IndicatorFn)$\;
-        $return(vec)$\;
-    }
-    \Begin{
-        $MapScore(score, label)$:\;
-        \eIf{label = 1.0}{
-            $Pos \longleftarrow Pos + 1$\;
-            $tpv \longleftarrow Vector.fill(l)(IndicatorFn(sign(score - thresholds(i)) == 1.0))$\;
-            $fpv \longleftarrow Vector.fill(l)(IndicatorFn(false))$\;
-        }{
-            $Neg \longleftarrow Neg + 1$\;
-            $tpv \longleftarrow Vector.fill(l)(IndicatorFn(false))$\;
-            $fpv \longleftarrow Vector.fill(l)(IndicatorFn(sign(score - thresholds(i)) == 1.0))$\;
-        }
-        $emit(tpv,fpv)$\;
-    }
-    \Begin{
-        $RedScore((u, v), (u', v'))$:\;
-        $emit(u + u', v + v')$\;
-    }
-    \Begin{
-        $thresholds \longleftarrow List(t_1, t_2, \ldots t_l)$\;
-        $Pos \longleftarrow 0$\;
-        $Neg \longleftarrow 0$\;
-        $scoresLabels \longleftarrow (X_f, Y_f)\ map\ predictLabel(\hat{w}, \hat{b})$\;
-        $(tp, fp) \longleftarrow scoresLabels \ map(MapScore) \ reduce(RedScore)$\;
-        \BlankLine
-        $tp \longleftarrow tp / Pos$
-        $fp \longleftarrow fp / Neg$
-        $roc \longleftarrow thresholds\ zip(tp\ zip\ fp)$\;
-        \BlankLine
-        
-        return $1 - area(roc)$\;
-    }
-\caption{Evaluate performance for fold: $evaluateFold$}
-\end{algorithm}
-
-
-\begin{algorithm}\label{cvmr}
-    \DontPrintSemicolon
-    \KwData{$X = [x^i],\ x^i\ \epsilon \ \mathbf{R}^n$, 
-    $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 
-    $Y = [y^i], y^i \epsilon \mathbf{R}$, $\gamma$, folds}
-    \KwResult{Cross Validation Performance}
-    
-    \Begin{
-        $(A, v) \longleftarrow FeatureMat(X, Y, \hat{\phi}, \gamma)$ \;
-        $score \longleftarrow 0$\;
-        \BlankLine
-        \nl\For{$i \longleftarrow 1 \ to \ folds $}{
-            $(X_i, Y_i) \longleftarrow$ fold i\;
-            $(A_i, v_i) \longleftarrow FeatureMat(X_i, Y_i, \hat{\phi}, \gamma)$ \;
-            $(\hat{w}, \hat{b}) \longleftarrow CG(A - A_i + \frac{1}{\gamma} \mathbf{I}_{m \times m}, v - v_i)$\;
-            $score \longleftarrow score + evaluateFold(\hat{w}, \hat{b}, X_i, Y_i)$\;
-        }
-        return $score/folds$\;
-    }
-\caption{Distributed v-Fold Cross-Validation}
-\end{algorithm}
+Appendix \ref{app:n} contains the detailed pseudo code for all the procedures discussed above. 

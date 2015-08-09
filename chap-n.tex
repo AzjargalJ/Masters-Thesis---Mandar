@@ -1,3 +1,5 @@
+\npdecimalsign{.}
+\nprounddigits{3}
 \chapter{Experiments}
 \label{cha:n}
 The experiments are performed on a 40 core 64GB RAM machine at the Department of Electrical Engineering, KU Leuven. The experiment parameters are summarized in table \ref{table:param}. We use the \textit{Magic Gamma} Telescope, and \textit{Adult} data sets available from the UCI Machine Learning Repository \cite{Lichman:2013}. The performance of various kernel based FS-LSSVM models is carried out for various experimental parameters, each set of experiments is repeated thrice, the mean and standard deviation (in brackets), of the area under ROC curve and the classification accuracy are recorded and presented in tables \ref{table1} and \ref{table2}.
@@ -54,17 +56,20 @@ The performance of binary FS-LSSVM classifiers on the \textit{MAGIC Gamma} Teles
 
 \DTLloaddb{magicgamma}{resultsMagicGammaProc.csv}
 \begin{table*}[!htbp]
+\sisetup{round-mode=places}
 \caption{Magic Gamma Test Results}
 \begin{center}
 \adjustbox{max width=\textwidth}{
-\begin{tabular}{|l|l|l|l|l|l|l|l|}\label{table1}
-\bfseries Kernel & \bfseries Prototypes & \bfseries Global Optimization & \bfseries Grid Size & \bfseries Grid Resolution & \bfseries Scale & \bfseries max F1 score & \bfseries Area under ROC%
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}\label{table1}
+\bfseries Kernel & \bfseries Prototypes & \bfseries Global Optimization & \bfseries Grid Size & 
+\bfseries Grid Resolution & \bfseries Accuracy & \bfseries F1 score & \bfseries ROC area & \bfseries Execution Time%
 \DTLforeach{magicgamma}{\kernel=kernel,\prototypes=prototypes,
 \globaloptimization=globaloptimization,\gridsize=gridsize,
-\gridresolution=gridresolution,\scale=scale,\maxF=maxF1score,
-\stdF=stdF,\areaunderROC=areaunderROC,\stdR=stdR}%
+\gridresolution=gridresolution,\acc=accuracy,\stdA=stdA,\maxF=maxF1score,
+\stdF=stdF,\areaunderROC=areaunderROC,\stdR=stdR,\time=time,\stdT=stdT}%
 {%
-  \\\kernel & \prototypes & \globaloptimization & \gridsize & \gridresolution & \scale & $\maxF(\stdF)$ & $\areaunderROC(\stdR)$
+  \\\kernel & \prototypes & \globaloptimization & \gridsize & \gridresolution & 
+  $\acc(\stdA)$ & $\maxF(\stdF)$ & $\areaunderROC(\stdR)$ & $\time(\stdT)$
 }%
 \end{tabular}
 }

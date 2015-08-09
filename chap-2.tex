@@ -6,7 +6,7 @@ The term \textit{Scientific Programming} must be interpreted with proper context
 
 Nevertheless it is instructive to take a quick glance at the history of programming languages in order to motivate the design philosophy behind \textit{FS-Scala} and the \textit{MapReduce} computational paradigm which has been applied extensively in modern large scale data processing frameworks.
 
-We classify programming languages on two broad issues, for an in-depth treatment of the subject one may refer to some of the canonical texts in the area \cite{Sethi:1989}.
+We classify programming languages on two broad issues, for an in-depth treatment of the subject one may refer to some of the canonical texts in the area \cite{Sethi:1989}, \cite{Abelson:1996:SIC:547755}.
 
 \begin{itemize}
 \item Translation to Machine level code.
@@ -30,7 +30,7 @@ Programs consist of expressions which take input and output the results, its wor
 \end{itemize}
 \end{itemize}
 
-There are advantages and limitations of each programming language or paradigm, which must be understood before choosing one for a particular application. It is well known that compiled languages have much better performance than interpreted languages, though one must keep in mind that being compiled or interpreted are not inherent characteristics of the languages themselves rather practical implementation details. This advantage that languages like C and Fortran possess is evidenced in the fact that much of the Python scientific programming frameworks use underlying C or Fortran primitives for fast computation, \textit{scikit-learn} \cite{scikit-learn} being the best example.
+There are advantages and limitations of each programming language or paradigm, which must be understood before choosing one for a particular application. It is well known that compiled languages have much better performance than interpreted languages, though one must keep in mind that being compiled or interpreted are not inherent characteristics of the languages themselves rather practical implementation details. This advantage that languages like C and Fortran possess is evidenced in the fact that much of the Python scientific programming frameworks use underlying \textit{C} or \textit{Fortran} primitives for fast computation, \textit{scikit-learn} \cite{scikit-learn} being the best example.
 
 So far \textit{Python} and \textit{MATLAB} have been the dominant languages used in computation for engineering and science applications, this is because of their ease of learning with respect to syntax and the ready availability of packages which can be used to extend their capability for specific applications like signal processing (in \textit{MATLAB}) and Natural Language Processing (see \textit{NLTK} \cite{NLTK} ) in \textit{python}.
 
@@ -38,9 +38,14 @@ While \textit{python} and \textit{MATLAB} are convenient for quick prototyping o
 
 \subsection*{Scala, MapReduce and Data Processing}
 
+\textit{Scala} is a hybrid, multi-paradigm language developed at the EPFL, Lausanne in 2004 \cite{scala-overview-tech-report}. It is a JVM based language because all \textit{Scala} code is translated to JVM byte code to be execute like any other Java program. This gives it seamless interpolability with Java and all the programming frameworks written in Java. It is primarily an OOP language which has many functional characteristics like support for \textit{tail recursive} optimization, function composition and immutable data structures. Its is inspired by many prominent FP languages like \textit{Lisp}, \textit{Haskell}, \textit{OCaml} etc.
 
-\begin{figure}[ht] 
-\begin{adjustbox}{max width=0.85\textwidth}
+An important concept or paradigm espoused in many FP languages is \textit{MapReduce}, it can be readily observed that many programs/computations in languages like \textit{Lisp}, \textit{Scala} use \textit{MapReduce} on immutable data structures like lists in order to obtain results. In chapter \ref{cha:3} we delve further into the \textit{MapReduce} paradigm and why it is so central to modern big data architectures. It is instructive to note that in \textit{Scala}, data structures like lists, maps and so on have in built \texttt{map} and \texttt{reduce} functions which enable the programmer to think and code in this paradigm.
+
+It is for these reasons that \textit{Scala} has become crucial to the implementation of modern big data frameworks like \textit{Apache Spark} and the language of choice for us in the implementation of the FS-LSSVM.
+
+\begin{figure}[!ht] 
+\begin{adjustbox}{max width=\textwidth}
 \begin{tikzpicture}[mindmap,
   level 1 concept/.append style={level distance=110,sibling angle=40},
   extra concept/.append style={color=blue!50,text=black}]
@@ -75,29 +80,25 @@ While \textit{python} and \textit{MATLAB} are convenient for quick prototyping o
   \end{scope}
 
   \begin{scope}[mindmap, concept color=violet, text=white]
-    \node [concept] (imp) at (11,-2.5) {Imperative};
+    \node [concept] (imp) at (10,-3.5) {Imperative};
   \end{scope}
 
   \begin{pgfonlayer}{background}
-    \draw [circle connection bar]
-        (java) edge (oop)
-        (java) edge (imp)
-        (fp) edge (scala)
-        (scala) edge (oop)
-        (c) edge (imp)
-        (py) edge (oop)
-        (py) edge (fp)
-        (py) edge (imp)
-        (r) edge (fp)
-        (r) edge (oop)
-        (julia) edge (fp)
-        (julia) edge (oop)
-        (matlab) edge (fp)
-        (matlab) edge (oop)
-        (matlab) edge (imp)
-        (fortran) edge (oop)
-        (fortran) edge (imp);
-      
+    \path (java) to[circle connection bar] (oop);
+    \path (java) to[circle connection bar] (imp);
+    \path (scala) to[circle connection bar] (fp);
+    \path (scala) to[circle connection bar] (oop);
+    \path (c) to[circle connection bar] (imp);
+    \path (py) to[circle connection bar] (oop);
+    \path (py) to[circle connection bar] (imp);
+    \path (r) to[circle connection bar] (fp);
+    \path (r) to[circle connection bar] (oop);
+    \path (julia) to[circle connection bar] (oop);
+    \path (julia) to[circle connection bar] (fp);
+    \path (matlab) to[circle connection bar] (oop);
+    \path (matlab) to[circle connection bar] (imp);
+    \path (fortran) to[circle connection bar] (oop);
+    \path (fortran) to[circle connection bar] (imp);
   \end{pgfonlayer}
 \end{tikzpicture}
 \end{adjustbox}
