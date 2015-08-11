@@ -115,10 +115,10 @@ Since its inception, there have been a number of implementations of the classica
 
 \item SVM\textsuperscript{Light}: A C based software package that aims to reduce the training times for SVM models using faster optimization algorithms which are achieved by a combination of kernel evaluation caching, heuristics and support vector selection based on \textit{steepest feasible descent}. Recently a new implementation \textit{SVM\textsuperscript{perf}} has also been introduced to further speed up model training compared to \textit{SVM\textsuperscript{light}} for large data sets and to optimize multivariate performance measures like F1 measure, ROC area, etc. For an implementation applicable to structures like trees, one can also use SVM\textsuperscript{struct}. 
 
-\item Apache Spark SVM: This SVM model implementation exists as a part of the \textit{MLLib} machine learning library in the \textit{Apache Spark} big data and cluster computing platform. It is one of the several linear models that are offered in this libraries. \textit{MLLib} comes bundled with optimization algorithms such as SGD and L-BFGS.
-
 
 \item LSSVMLab: A MATLAB software toolbox to train and test LSSVM models. It has support for kernels as well as Bayesian LSSVM formulations which calculate posterior probability of a model or set of hyper-parameters.
+
+\item Apache Spark SVM: This SVM model implementation exists as a part of the \textit{MLLib} machine learning library in the \textit{Apache Spark} big data and cluster computing platform. It is one of the several linear models that are offered in this libraries. \textit{MLLib} comes bundled with optimization algorithms such as SGD and L-BFGS, both methods being iterative require multiple passes through the training data to learn a SVM model instance.
 
 \end{itemize}
 
@@ -136,9 +136,42 @@ Big Data analysis requires the distribution of computational work load, \textit{
 The big data landscape has many tools which enable the storage and analysis of large streams of data, they consist of technologies such as, but not limited to \textit{Apache Spark}, \textit{Hadoop}, Graph Databases like \textit{Titan} \cite{Titan:2014}, \textit{OrientDB} \cite{OrientDB:2010}, \textit{Neo4j} \cite{Neo4j:2010}. Creating a powerful framework for model training and evaluation requires the decoupling of storage and processing infrastructure from the actual logic that implements the architecture of learning models.
 \end{itemize}
 
-The implementation of the FS-LSSVM in FS-Scala, outlined in algorithm \ref{lssvmalgo}, chapter \ref{cha:1} is as described in the original article of De Brabanter et al. \cite{DeBrabanter2010}. Kernel based models all implement the interface \textit{GloballyOptimizable} in the optimization module (see Figure \ref{fig:modelUML1}). Since the \textit{GlobalOptimizer} and its subclasses (i.e. \textit{GridSearch} and \textit{CoupledSimulated Annealing}) all optimize models which implement the \text{GloballyOptimizable} interface, it enables tuning of models with a variety of global optimization algorithms convenient.
-
 \subsection*{Architecture}
+\begin{figure}[!ht] 
+\begin{adjustbox}{max width=0.95\textwidth}
+\begin{tikzpicture} [mindmap, grow cyclic, every node/.style=concept, concept color=orange, 
+    level 1/.append style={level distance=5cm,sibling angle=72},
+    level 2/.append style={level distance=2.5cm,sibling angle=45}, text=white]
+\node{FS-Scala}
+   child [concept color=blue]{ node {Model Classes}
+        child { node {LSSVM Spark Model}}
+        child { node {Kernel Spark Model}}
+    }
+    child [concept color=red]{ node {Kernels}
+        child { node {Mercer Kernels}}
+        child { node {Density Estimation Kernels}}
+    }
+    child [concept color=violet]{ node {Optimization}
+        child { node {Gradient Based}}
+        child { node {Conjugate Gradient}}
+        child { node {Global Optimization}}
+    }
+    child [concept color=purple]{ node {Evaluation Metrics}
+        child { node {Classification}}
+        child { node {Regression}}
+    }
+    child [concept color=gray]{ node {Miscellaneous Utilities}
+        child { node {Prototype Selection}}
+        child { node {Summary Statistics}}
+        child { node {Entropy Computation}}
+    };
+
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Schematic structure of FS-Scala}
+\label{fig:struct}
+\end{figure}
+
 Figure \ref{fig:struct} shows the organization of modules in FS-Scala. It can be decomposed into five principal modules:
 \begin{itemize}
 \item Model Classes:
@@ -154,48 +187,26 @@ This module contains code to carry out auxiliary tasks for model learning and op
 
 \end{itemize}
 
-The FS-Scala software is available at \cite{fsscala}.
+\section{Contributions}
+\label{contributions}
 
+\subsection*{Hyper-parameter tuning}
+The modular design approach of FS-Scala provides the user flexibility to apply different tuning algorithms on kernel as well as linear LSSVM models. Kernel based models in FS-Scala all implement the interface \textit{GloballyOptimizable} contained in the optimization module (see Figure \ref{fig:modelUML1} in appendix \ref{app:A}). \textit{GlobalOptimizer} and its subclasses (i.e. \textit{GridSearch} and \textit{CoupledSimulatedAnnealing}) all optimize models which implement the \text{GloballyOptimizable} interface.
 
+\subsection*{Speed Improvements}
+\begin{itemize}
+\item \textbf{Fast Entropy Calculation}:
+R\`enyi Entropy based iterative prototype selection is of complexity $O(m^2)$ where $m$ is the number of prototypes to be selected. In FS-Scala after the initial entropy calculation, subsequent computations are only calculated by the entropy difference due to the exchange of one element between the prototype set and rest of the training data. Calculating the entropy differences each iteration is of the order $O(m)$.
 
-\begin{figure}[ht] 
-\begin{adjustbox}{max width=0.85\textwidth}
-\begin{tikzpicture} [mindmap, grow cyclic, every node/.style=concept, concept color=orange!40, 
-    level 1/.append style={level distance=4cm,sibling angle=72},
-    level 2/.append style={level distance=3cm,sibling angle=45},]
-\node{FS-Scala}
-   child [concept color=blue!30]{ node {Model Classes}
-        child { node {LSSVM Spark Model}}
-        child { node {Kernel Spark Model}}
-    }
-    child [concept color=brown!30]{ node {Kernels}
-        child { node {Mercer Kernels}}
-        child { node {Density Estimation Kernels}}
-    }
-    child [concept color=teal!30]{ node {Optimization}
-        child { node {Gradient Based}}
-        child { node {Conjugate Gradient}}
-        child { node {Global Optimization}}
-    }
-    child [concept color=purple!30]{ node {Evaluation Metrics}
-        child { node {Classification}}
-        child { node {Regression}}
-    }
-    child [concept color=green!30]{ node {Miscellaneous Utilities}
-        child { node {Prototype Selection}}
-        child { node {Summary Statistics}}
-        child { node {Entropy Computation}}
-    };
+\item \textbf{Single Pass Model Training}: 
+FS-Scala contains an implementation of CG (algorithm  \ref{cgmr}) which requires only a single pass through the training data to calculate the matrices $A = \left (\hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma} \right )$ and $c = \hat{\Phi}^{\intercal}_e y$ which are then used to carry out local CG iterations.
 
-\end{tikzpicture}
-\end{adjustbox}
-\caption{Schematic structure of FS-Scala}
-\label{fig:struct}
-\end{figure}
+\item \textbf{Fast Cross Validation}:
+By implementing the fast v-fold cross validation as outlined in \cite{DeBrabanter2010}, FS-Scala eliminates the need to go through the entire training data to calculate the matrices $A_v$ and $c_v$ required for each fold.
 
+\item \textbf{Caching}:
+The matrices $A$ and $c$ require a complete pass through the training data to be calculated, but their calculation requires only the original data $(X, Y)$ and the approximate feature map $\hat{\phi}$ which in turn depends on a precomputed kernel matrix with respect to a kernel parameter. By caching the matrices $A$ and $c$ for a particular value of the kernel parameter, FS-Scala can reuse them for multiple values of the regularization parameter $\gamma$. This greatly reduces the total number of passes through the data set the FS-LSSVM algorithm has to carry out, a factor which crucial for tuning of large scale kernel based SVM models.
 
+\end{itemize}
 
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "thesis"
-%%% End: 
+The implementation of the FS-LSSVM in FS-Scala, outlined in algorithm \ref{lssvmalgo}, chapter \ref{cha:1} is as described in in De Brabanter et al. \cite{DeBrabanter2010}.The FS-Scala software is available at \cite{fsscala}.

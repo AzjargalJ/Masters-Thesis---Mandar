@@ -19,10 +19,10 @@ This appendix contains the pseudo code of major components of the FS-Scala imple
  \caption{Tuning FS-LSSVM}
 \end{algorithm}
 
-
+\clearpage
 \section{Model Training}
 
-\begin{algorithm}[!ht]\label{fmmr}
+\begin{algorithm}[!htbp]\label{fmmr}
     \DontPrintSemicolon
     \KwData{$X = [x^i],\ x^i\ \epsilon \ \mathbf{R}^n$, 
     $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 
@@ -46,7 +46,7 @@ This appendix contains the pseudo code of major components of the FS-Scala imple
 \caption{Calculate feature matrices from data using MapReduce: $FeatureMat$}
 \end{algorithm}
 
-\begin{algorithm}[!ht]\label{cgmr}
+\begin{algorithm}[!htbp]\label{cgmr}
     \DontPrintSemicolon
     \KwData{$X = [x^i],\ x^i\ \epsilon \ \mathbf{R}^n$, 
     $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 
@@ -68,9 +68,10 @@ This appendix contains the pseudo code of major components of the FS-Scala imple
 \caption{Conjugate Gradient: $CG$}
 \end{algorithm}
 
+\clearpage
 \section{Model Evaluation}
 
-\begin{algorithm}[!ht]\label{cvmr}
+\begin{algorithm}[!htbp]\label{cvmr}
     \DontPrintSemicolon
     \KwData{$X = [x^i],\ x^i\ \epsilon \ \mathbf{R}^n$, 
     $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 
@@ -92,7 +93,7 @@ This appendix contains the pseudo code of major components of the FS-Scala imple
 \caption{Distributed v-Fold Cross-Validation}
 \end{algorithm}
 
-\begin{algorithm}[!ht]\label{efmr}
+\begin{algorithm}[!htbp]\label{efmr}
     \DontPrintSemicolon
     \KwData{$X_f = [x^i],\ x^i\ \in \ \mathbf{R}^n$, 
     $\hat{\phi} : \mathbf{R}^n \longrightarrow \mathbf{R}^m$, 

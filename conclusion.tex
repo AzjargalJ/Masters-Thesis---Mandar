@@ -1,10 +1,19 @@
 \chapter{Conclusion}
 \label{cha:conclusion}
-In this thesis \textit{FS-Scala}, a Scala-based implementation for training and tuning kernel based FS-LSSVM models. As a use case, the kernel based FS-LSSVM model is tested on benchmark data sets. We observed that our implementation enables scalable training, tuning and evaluation of models learning from Big Data, while still providing flexibility to tweak various underlying data processing infrastructure.
+In this thesis, \textit{FS-Scala} a Scala-based implementation of the FS-LSSVM is proposed as a programming framework for working with small and large scale FS-LSSVM models. The current SVM and LSSVM software do not leverage distributed \textit{MapReduce} to implement kernel based SVM/LSSVM models but rather provide support for only linear models in the case of large data sets (\textit{Apache Spark} \cite{Spark:2010}). 
 
+The proposed library \textit{FS-Scala} includes global optimization algorithms like \textit{Grid Search} (GS) and \textit{Coupled Simulated Annealing} (CSA) used to tune FS-LSSVM models. In order to make the tuning of non linear classification models possible on large data sets, a number of performance enhancements are proposed in section \ref{contributions}, which include but not limited to fast v-fold cross validation and feature matrix caching.
 
+In chapter \ref{cha:n}, \textit{FS-Scala} is applied on a number of benchmark data sets (i.e. \textit{Magic Gamma}, \textit{Adult} and \textit{Forest Cover Type}) and the performance and model tuning time are recorded. It is observed that our implementation enables scalable training, tuning and evaluation of LSSVM models, while still providing flexibility to tweak various underlying data processing infrastructure. We conclude by discussing ideas for future research work and further improvements to \textit{FS-Scala}. 
 
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "thesis"
-%%% End: 
+\section{Future Work}
+
+Further research/improvements on \textit{FS-Scala} can be done in two proposed directions.
+
+\begin{itemize}
+\item Experiments of large scale commodity clusters:
+Simulations were carried on a \emph{Apache Spark} standalone cluster which runs tasks concurrently over the different cores of the parent machine. But it is also possible to scale this process even further for greater computational benefits by using large commodity clusters as provided by cloud computing providers.
+
+\item Simultaneous evaluation of multiple model instances:
+During a particular v-fold cross validation operation only a single model instance (configuration of hyper-parameters) is trained and  evaluated, therefore to evaluate a $k \times k$ grid, $k^2$ v-fold cross validations must be carried out. Substantial improvements can be achieved if we can train and do v-fold CV on multiple model instances using only a single pass through the training data, leading to a new and exciting area of research in large scale FS-LSSVM model tuning. 
+\end{itemize}

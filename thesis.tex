@@ -71,7 +71,7 @@
 \tableofcontents*
 
 \begin{abstract}
-We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implementation of the Fixed Size Least Squares Support Vector Machine (FS-LSSVM) for large data sets. The framework consists of a set of modules for (gradient and gradient free) optimization, model representation, kernel functions and evaluation of FS-LSSVM models. A kernel based \textit{Fixed-Size Least Squares Support Vector Machine} (FS-LSSVM) model is implemented in the proposed framework, while heavily leveraging the parallel computing capabilities of \textit{Apache Spark}. Global optimization routines like \emph{Coupled Simulated Annealing} (CSA) and \emph{Grid Search} are implemented and used to tune the hyper-parameters of the FS-LSSVM model. Finally, we carry out experiments on benchmark data sets like \emph{Magic Gamma} and \emph{Adult} and evaluate the performance of various kernel based FS-LSSVM models.
+We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implementation of the Fixed Size Least Squares Support Vector Machine (FS-LSSVM) for large data sets. The framework consists of a set of modules for (gradient and gradient free) optimization, model representation, kernel functions and evaluation of FS-LSSVM models. A kernel based \textit{Fixed-Size Least Squares Support Vector Machine} (FS-LSSVM) model is implemented in the proposed framework, while heavily employing distributed \textit{MapReduce} via the parallel computing capabilities of \textit{Apache Spark}. Global optimization routines like \emph{Coupled Simulated Annealing} (CSA) and \emph{Grid Search} are implemented and used to tune the hyper-parameters of the FS-LSSVM model. Finally, we carry out experiments on benchmark data sets like \emph{Magic Gamma} and \emph{Adult} and \emph{Forest Cover Type}, recording the performance and tuning time of various kernel based FS-LSSVM models.
 \end{abstract}
 
 % A list of figures and tables is optional
@@ -108,10 +108,26 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
-    $c$   & Speed of light \\
-    $E$   & Energy \\
-    $m$   & Mass \\
-    $\pi$ & The number pi \\
+    $n$ & Number of training instances\\
+    $m$ & Number of prototypes selected\\
+    $X $   & Training data ${x_i \ \epsilon \ \mathbb{R}^d}_{i = 1 \hdots n}$ \\
+    $Y$   & Vector of labels ${y_i \epsilon {-1, 1}}_{i = 1 \hdots N}$ for the training set $X$ \\
+    $\mathfrak{D}_n$ & The training data set consisting of features and labels $(X, Y)$\\
+    $\mathfrak{W}_m$ & Working set of size $m$ chosen from the training set $\mathfrak{D}_n$\\
+    $K$ & Symmetric positive semi-definite Kernel Function of the form $\mathbb{R}^d \times \mathbb{R}^d \longrightarrow \mathbb{R}$ \\
+    
+    $\Omega$ & Kernel matrix constructed from $\mathfrak{W}_m$, entries given by $[K(x_i, x_j)]_{m \times m}$\\
+    
+    $\hat{\phi}$ & Approximate feature map $\mathbb{R}^d \longrightarrow \mathbb{R}^m$ obtained from AFE on a the kernel matrix $\Omega$ \\
+    
+    $\hat{\Phi}_e$ & The extended feature matrix $\begin{pmatrix}
+\hat{\phi}_{1}(x_1) & \cdots & \hat{\phi}_{m}(x_1) & 1\\ 
+\vdots &  \ddots & \vdots & \vdots\\ 
+\hat{\phi}_{1}(x_n) & \cdots & \hat{\phi}_{m}(x_n) & 1
+\end{pmatrix}$ \\
+    $A$ & Matrix $\left (\hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma} \right )$ required for CG\\
+    $c$ & Vector $ \hat{\Phi}^{\intercal}_e Y$ required for CG\\
+    $(\hat{w}, \hat{b})^T$ & Parameters of an FS-LSSVM model estimated from $A$ and $c$ \\
   \end{tabularx}
 \end{flushleft}
 
