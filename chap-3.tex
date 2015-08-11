@@ -46,9 +46,18 @@ It can be broadly divided into two major phases or steps, although there are mor
 
 
 \section{Application in FS-Scala}
+FS-Scala leverages \textit{MapReduce} in two separate stages as outlined below, using \textit{Apache Spark} to distribute the workload amongst a number of processes/threads. Appendix \ref{app:n} contains the detailed pseudo code for all the computations outlined below
+\begin{itemize}
 
-As discussed above, we use \textit{MapReduce} wherever possible in order to distribute the workload using \textit{Apache Spark}. Due to the primal formulation of the FS-LSSVM, the size of matrix $A =  \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ , in the linear system in \eqref{eqfssol} is $(m+1) \times (m+1)$, where $m$ is the number of prototypes selected to construct the kernel matrix in kernel based FS-LSSVM. Procedure \ref{cgmr} outlines the procedure to estimate the parameters $\hat{w},\ \hat{b}$ of the FS-LSSVM model discussed in section \ref{sec:fs}, using the \textit{Conjugate Gradient} algorithm. 
+\item Model Training:
+For training a single FS-LSSVM model instance (given a fixed value of hyper-parameters), one must apply the feature map $\phi$ on each training example and generate the extended feature matrix $\hat{\Phi}_e$ in order to solve the linear system in equation \eqref{eqfssol} chapter \ref{cha:1}, this is achieved by algorithm \ref{fmmr}. Algorithm \ref{cgmr} outlines the procedure to estimate the parameters $\hat{w},\ \hat{b}$ of the FS-LSSVM model discussed in section \ref{sec:fs}, using the \textit{Conjugate Gradient} algorithm. Due to the primal formulation of the FS-LSSVM, the size of matrix $A =  \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ , in the linear system in \eqref{eqfssol} is $(m+1) \times (m+1)$, where $m$ is the number of prototypes selected to construct the kernel matrix in kernel based FS-LSSVM.
 
-Using \textit{MapReduce}, we calculate $A = \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ and $\hat{\Phi}^{\intercal}_e Y$. We use these results to carry out iterations of the Conjugate Gradient updates until the maximum number of iterations is reached.
-
-Appendix \ref{app:n} contains the detailed pseudo code for all the procedures discussed above. 
+\item Model Evaluation
+In the model evaluation process, there are two tasks which need to be solved with respect to calculating the cost of performance of a particular model instance.
+\begin{itemize}
+\item v-fold Cross Validation:
+The fast v-fold cross-validation outlined by De Brabanter et.al. \cite{DeBrabanter2010} is implemented in algorithm \ref{cvmr} to reduce the execution time for calculating the feature matrices. 
+\item Performance Metrics:
+Algorithm \ref{efmr} contains the implementation for calculating test set performance for each fold of test data. The true positive versus false positive curve is calculated on the test/validation fold provided and used to calculate the ROC area.
+\end{itemize}
+\end{itemize}

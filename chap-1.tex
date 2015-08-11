@@ -88,19 +88,4 @@ The solution to equation \ref{eqfs} is given by:
 
 In the above formulation, $\hat{\phi}(x_k)$ is an approximation to the true feature map $\phi(x_k)$ which is related to the kernel $K(x_i, x_j) = \phi(x_i)^{\intercal} \phi(x_j)$ (Mercer's theorem). The approximate feature map $\hat{\phi}(x_k)$ is calculated using the Nystr\"om method as outlined in \cite{DeBrabanter2010,Mall2015} and \cite{Mall2013}. A low rank approximation to the kernel matrix is constructed by iteratively calculating a subset of the original data which maximizes the \textit{Quadratic R\`enyi Entropy}. This procedure of extracting $\hat{\phi}(x_k)$ from a data set, given a kernel function, is called \textit{Automatic Feature Extraction} (AFE).
 
-Kernel based models are sensitive to hyper-parameters. In the case of FS-LSSVM we have to tune the model with respect to $\gamma$ the regularization parameter and the parameters of the kernel chosen. Models are generally compared with their cross-validation performance in which case the objective cost function with respect to the hyper-parameters is in general non-smooth and non-convex. Gradient free methods like Grid Search, Nelder Mead \cite{Nelder1965} and Coupled Simulated Annealing \cite{Xavier-De-Souza2010} are suitable to tackle the problem of model selection for FS-LSSVM based kernel models. Algorithm \ref{lssvmalgo} explains the steps involved in tuning the FS-LSSVM model with the bold part representing our contributions in this paper, which have been implemented in a MapReduce setting.
-
-\begin{algorithm}[!htbp] \label{lssvmalgo}
-\SetAlgoLined
-\KwData{Data Set, Kernel, Global Optimization routine, grid parameters}
-\KwResult{Proposed Tuned FS-LSSVM model}
- Pre-process the data by mean scaling.\;
- \textbf{Calculate the prototype set by maximizing the Quadratic R\`enyi Entropy in parallel using MapReduce.}\;
- Initialize a grid for the hyper-parameters\;
- \While{termination of global optimization routine}{
-  Initialize the kernel using the hyper-parameters.
-  Do AFE on the kernel matrix constructed from the prototypes, using the Nystrom method\;
-  evaluate the cross validation score for the particular hyper-parameter values\;
- }
- \caption{Tuning FS-LSSVM}
-\end{algorithm}
+Kernel based models are sensitive to hyper-parameters. In the case of FS-LSSVM we have to tune the model with respect to $\gamma$ the regularization parameter and the parameters of the kernel chosen. Models are generally compared with their cross-validation performance in which case the objective cost function with respect to the hyper-parameters is in general non-smooth and non-convex. Gradient free methods like Grid Search, Nelder Mead \cite{Nelder1965} and Coupled Simulated Annealing \cite{Xavier-De-Souza2010} are suitable to tackle the problem of model selection for FS-LSSVM based kernel models. Algorithm \ref{lssvmalgo} in appendix \ref{app:n} explains the steps involved in tuning the FS-LSSVM model with the bold part representing our contributions in this thesis, which have been implemented in a \textit{MapReduce} setting.

@@ -2,6 +2,24 @@
 \label{app:n}
 This appendix contains the pseudo code of major components of the FS-Scala implementation. They are organized as per their function in the model building process.
 
+\section{FS-LSSVM}
+
+\begin{algorithm}[!htbp] \label{lssvmalgo}
+\SetAlgoLined
+\KwData{Data Set, Kernel, Global Optimization routine, grid parameters}
+\KwResult{Proposed Tuned FS-LSSVM model}
+ Pre-process the data by mean scaling.\;
+ \textbf{Calculate the prototype set by maximizing the Quadratic R\`enyi Entropy in parallel using MapReduce.}\;
+ Initialize a grid for the hyper-parameters\;
+ \While{termination of global optimization routine}{
+  Initialize the kernel using the hyper-parameters.
+  Do AFE on the kernel matrix constructed from the prototypes, using the Nystrom method\;
+  evaluate the cross validation score for the particular hyper-parameter values\;
+ }
+ \caption{Tuning FS-LSSVM}
+\end{algorithm}
+
+
 \section{Model Training}
 
 \begin{algorithm}[!ht]\label{fmmr}
