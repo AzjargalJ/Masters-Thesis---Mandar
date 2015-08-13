@@ -50,7 +50,10 @@ FS-Scala leverages \textit{MapReduce} in two separate stages as outlined below, 
 \begin{itemize}
 
 \item Model Training:
-For training a single FS-LSSVM model instance (given a fixed value of hyper-parameters), one must apply the feature map $\phi$ on each training example and generate the extended feature matrix $\hat{\Phi}_e$ in order to solve the linear system in equation \eqref{eqfssol} chapter \ref{cha:1}, this is achieved by algorithm \ref{fmmr}. Algorithm \ref{cgmr} outlines the procedure to estimate the parameters $\hat{w},\ \hat{b}$ of the FS-LSSVM model discussed in section \ref{sec:fs}, using the \textit{Conjugate Gradient} algorithm. Due to the primal formulation of the FS-LSSVM, the size of matrix $A =  \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ , in the linear system in \eqref{eqfssol} is $(m+1) \times (m+1)$, where $m$ is the number of prototypes selected to construct the kernel matrix in kernel based FS-LSSVM.
+
+For training a single FS-LSSVM model instance (given a fixed value of hyper-parameters), one must apply the feature map $\phi$ on each training example and generate the extended feature matrix $\hat{\Phi}_e$ in order to solve the linear system in equation \eqref{eqfssol} chapter \ref{cha:1}, this is achieved by algorithm \ref{fmmr}. 
+
+Algorithm \ref{cgmr} outlines the procedure to estimate the parameters $\hat{w},\ \hat{b}$ of the FS-LSSVM model discussed in section \ref{sec:fs}, using the \textit{Conjugate Gradient} algorithm. Due to the primal formulation of the FS-LSSVM, the size of matrix $A =  \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ , in the linear system in \eqref{eqfssol} is $(m+1) \times (m+1)$. Due to the fact that $m \ll n$, the CG iterations can be carried out locally once the matrices $A$ and $c$ are computed.
 
 \item Model Evaluation
 In the model evaluation process, there are two tasks which need to be solved with respect to calculating the cost of performance of a particular model instance.

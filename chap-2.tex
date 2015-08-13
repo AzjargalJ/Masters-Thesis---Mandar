@@ -34,7 +34,11 @@ There are advantages and limitations of each programming language or paradigm, w
 
 So far \textit{Python} and \textit{MATLAB} have been the dominant languages used in computation for engineering and science applications, this is because of their ease of learning with respect to syntax and the ready availability of packages which can be used to extend their capability for specific applications like signal processing (in \textit{MATLAB}) and Natural Language Processing (see \textit{NLTK} \cite{NLTK} ) in \textit{python}.
 
-While \textit{python} and \textit{MATLAB} are convenient for quick prototyping of new algorithms and models, for production machine learning systems their performance makes them unsuitable for those applications. The most common languages used for production systems are \textit{C/C++} and \textit{Java}. The Java Virtual Machine (JVM) has become a standard platform for enterprise applications in the past two decades. The \textit{Apache Hadoop} and \textit{Mahout} big data and machine learning frameworks are written entirely in \textit{Java}. As such, the JVM offers a sound platform for future efforts in large scale machine learning. One of the recent developments has been the development of JVM based languages which have embraced the FP paradigm along with the inherent Object Oriented (OO) nature of the \textit{Java} language and the JVM.
+While \textit{python} and \textit{MATLAB} are convenient for quick prototyping of new algorithms and models, for production machine learning systems their performance makes them unsuitable for those applications. The most common languages used for production systems are \textit{C/C++} and \textit{Java}. 
+
+The Java Virtual Machine (JVM) has become a standard platform for enterprise applications in the past two decades. The \textit{Apache Hadoop} \cite{Hadoop:2005} and \textit{Mahout} \cite{Mahout} big data and machine learning frameworks are written entirely in \textit{Java}. \emph{Apache Mahout} has been applied to large scale problems  \cite{mahoutinaction} of categorization, clustering \cite{mahoutclus} and in recommendation, \cite{mahoutreco1}. 
+
+Apart from \emph{Hadoop} and \emph{Mahout}, other prominent Java machine learning frameworks are \emph{Mallet} \cite{Mallet}, \emph{Deeplearning4j} \cite{dl4j}, \emph{BoofCV} \cite{BoofCV2012}, \emph{MOA} (Massive Online Analysis) \cite{MOA} and \emph{javaML} \cite{javaML} among many others.  As such, the JVM offers a sound platform for future efforts in large scale machine learning. One of the recent developments has been the development of JVM based languages which have embraced the FP paradigm along with the inherent Object Oriented (OO) nature of the \textit{Java} language and the JVM.
 
 \subsection*{Scala, MapReduce and Data Processing}
 
@@ -190,10 +194,10 @@ This module contains code to carry out auxiliary tasks for model learning and op
 \section{Contributions}
 \label{contributions}
 
-\subsection*{Hyper-parameter tuning}
+\subsection{Hyper-parameter tuning}
 The modular design approach of FS-Scala provides the user flexibility to apply different tuning algorithms on kernel as well as linear LSSVM models. Kernel based models in FS-Scala all implement the interface \textit{GloballyOptimizable} contained in the optimization module (see Figure \ref{fig:modelUML1} in appendix \ref{app:A}). \textit{GlobalOptimizer} and its subclasses (i.e. \textit{GridSearch} and \textit{CoupledSimulatedAnnealing}) all optimize models which implement the \text{GloballyOptimizable} interface.
 
-\subsection*{Speed Improvements}
+\subsection{Speed Improvements}
 \begin{itemize}
 \item \textbf{Fast Entropy Calculation}:
 R\`enyi Entropy based iterative prototype selection is of complexity $O(m^2)$ where $m$ is the number of prototypes to be selected. In FS-Scala after the initial entropy calculation, subsequent computations are only calculated by the entropy difference due to the exchange of one element between the prototype set and rest of the training data. Calculating the entropy differences each iteration is of the order $O(m)$.

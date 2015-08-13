@@ -1,12 +1,12 @@
-\chapter{Conclusion}
-\label{cha:conclusion}
+\chapter{Conclusions and Future Work}\label{cha:conclusion}
+
 In this thesis, \textit{FS-Scala} a Scala-based implementation of the FS-LSSVM is proposed as a programming framework for working with small and large scale FS-LSSVM models. The current SVM and LSSVM software do not leverage distributed \textit{MapReduce} to implement kernel based SVM/LSSVM models but rather provide support for only linear models in the case of large data sets (\textit{Apache Spark} \cite{Spark:2010}). 
 
 The proposed library \textit{FS-Scala} includes global optimization algorithms like \textit{Grid Search} (GS) and \textit{Coupled Simulated Annealing} (CSA) used to tune FS-LSSVM models. In order to make the tuning of non linear classification models possible on large data sets, a number of performance enhancements are proposed in section \ref{contributions}, which include but not limited to fast v-fold cross validation and feature matrix caching.
 
 In chapter \ref{cha:n}, \textit{FS-Scala} is applied on a number of benchmark data sets (i.e. \textit{Magic Gamma}, \textit{Adult} and \textit{Forest Cover Type}) and the performance and model tuning time are recorded. It is observed that our implementation enables scalable training, tuning and evaluation of LSSVM models, while still providing flexibility to tweak various underlying data processing infrastructure. We conclude by discussing ideas for future research work and further improvements to \textit{FS-Scala}. 
 
-\section{Future Work}
+\section*{Future Work}
 
 Further research/improvements on \textit{FS-Scala} can be done in two proposed directions.
 
