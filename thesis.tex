@@ -89,6 +89,8 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
     SVM   & Support Vector Machine \\
     FS-LSSVM   & Fixed Size Least Squares Support Vector Machine \\
     CG   & Conjugate Gradient \\
+    L-BFGS & Limited Memory Broyden-Fletcher-Goldfarb-Shanno\\
+    SGD & Stochastic Gradient Descent\\
     CSA  & Coupled Simulated Annealing \\
     AFE  & Automatic Feature Extraction \\
     API  & Application Programming Interface \\ 
@@ -114,6 +116,7 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
     $Y$   & Vector of labels ${y_i \ \epsilon \ \{-1, 1\}}_{i = 1 \hdots n}$ for the training set $X$ \\
     $\mathfrak{D}_n$ & The training data set consisting of features and labels $(X, Y)$\\
     $\mathfrak{W}_m$ & Working set of size $m$ chosen from the training set $\mathfrak{D}_n$\\
+    $\gamma$ & Regularization parameter used in the LSSVM formulations outlined in equations \eqref{eqlssvm} and \eqref{eqfs}\\
     $K$ & Symmetric positive semi-definite Kernel Function of the form $\mathbb{R}^d \times \mathbb{R}^d \longrightarrow \mathbb{R}$ \\
     
     $\Omega$ & Kernel matrix constructed from $\mathfrak{W}_m$, entries given by $[K(x_i, x_j)]_{m \times m}$\\
@@ -147,7 +150,7 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
 \appendix
 \include{app-A}
 \include{app-2}
-\include{app-n}
+%\include{app-n}
 % ... and so on until
 \backmatter
 % The bibliography comes after the appendices.
