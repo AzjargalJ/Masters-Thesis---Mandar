@@ -37,11 +37,11 @@ It is worthwhile to note that although \textit{MapReduce} is supported in severa
 It can be broadly divided into two major phases or steps, although there are more phases that can be optionally applied, the reader is urged to refer to references in this area for a more in-depth explanation \cite{HDFS}, \cite{HadoopBook} \cite{Yarn}.
 
 \begin{itemize}
-\item \textit{Map}: Each file is divided into splits, on each node/split a \texttt{map} function (of the form $V \longrightarrow W$) which is self contained (it is assumed to be independent of data on other splits) is applied on each data split. Due to this inter-partition \texttt{map} operation independence, this phase can be carried out in a (massively) parallel fashion.
+\item \textit{Map}: Each file is divided into splits, on each node/split a \texttt{map} function (of the form $V \longrightarrow W$) which is self contained (it is assumed to be independent of data on other splits) is applied on each data split. Due to this inter-partition \texttt{map} task independence (also referred to as locality), this phase can be carried out in a (massively) parallel fashion.
 
 \item \textit{Reduce}: This consists of application of the so called \texttt{reduce} function which is of the form $W \times W \longrightarrow W$, it "combines" or "merges" two quantities/entities which are outputs of the \texttt{map} function in some meaningful way. In order for this phase to be implemented in parallel, it is required that this \texttt{reduce} function be associative in the algebraic sense, although commutativity is not a requirement of this function, it allows for further distributed optimization of this computation.
 
-\item \textit{Combine} (Optional): This is an optional phase which may be applied before the \textit{Reduce} phase, it is a function called \texttt{combine} whose functional signature is identical to that of the \texttt{reduce} function, its utility is primarily reducing the overhead on the \textit{Reduce} phase by preprocessing the intermediate output of the \texttt{map} functions. 
+\item \textit{Combine} (Optional): This is an optional phase which may be applied before the \textit{Reduce} phase, it is a function called \texttt{combine} whose functional signature is identical to that of the \texttt{reduce} function, its utility is primarily reducing the overhead on the \textit{Reduce} phase by preprocessing the intermediate output of the \texttt{map} functions.
 \end{itemize}
 
 
@@ -76,7 +76,7 @@ FS-Scala leverages \textit{MapReduce} in two separate stages as outlined below, 
 \end{algorithm}
 
 
-For training a single FS-LSSVM model instance (given a fixed value of hyper-parameters), one must apply the feature map $\phi$ on each training example and generate the extended feature matrix $\hat{\Phi}_e$ in order to solve the linear system in equation \eqref{eqfssol} chapter \ref{cha:1}, this is achieved by algorithm \ref{fmmr}. 
+For training a single FS-LSSVM model instance (given a fixed value of hyper-parameters), one must apply the feature map $\hat{\phi}$ on each training example and generate the extended feature matrix $\hat{\Phi}_e$ in order to solve the linear system in equation \eqref{eqfssol} chapter \ref{cha:1}, this is achieved by algorithm \ref{fmmr}. As noted earlier, distributed \emph{MapReduce} relies on the independence and locality of data processing operations. In the map phase of algorithm \ref{fmmr}, locality is achieved by emitting $\hat{\phi}(x)\hat{\phi}(x)^T$ and $\hat{\phi}(x)y$ for each data point $(x,y) \in \mathfrak{D}_n$ in a particular partition.
 
 \begin{algorithm}[!htbp]\label{cgmr}
     \DontPrintSemicolon
@@ -100,7 +100,9 @@ For training a single FS-LSSVM model instance (given a fixed value of hyper-para
 \caption{Conjugate Gradient: $CG$}
 \end{algorithm}
 
-Algorithm \ref{cgmr} outlines the procedure to estimate the parameters $\hat{w},\ \hat{b}$ of the FS-LSSVM model discussed in section \ref{sec:fs}, using the \textit{Conjugate Gradient} algorithm. Due to the primal formulation of the FS-LSSVM, the size of matrix $A =  \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ , in the linear system in \eqref{eqfssol} is $(m+1) \times (m+1)$. Due to the fact that $m \ll n$, the CG iterations can be carried out locally once the matrices $A$ and $c$ are computed.
+Once matrices $\hat{\Phi}^{\intercal}_e \hat{\Phi}_e$ and $c = \hat{\Phi}^{\intercal}_e Y$ are computed from \ref{fmmr}, they are used to carry out CG iterations to estimate model parameters $\hat{w},\ \hat{b}$ as shown in algorithm \ref{cgmr}. In \ref{cgmr} the matrix received as input $\hat{\Phi}^{\intercal}_e \hat{\Phi}_e$ is first regularized by adding $\frac{\mathit{I}_{m+1}}{\gamma}$, leading to a linear system of the form $Ax = c$.
+
+Due to the primal formulation of the FS-LSSVM in section \ref{sec:fs}, the size of matrix $A =  \hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma}$ which specifies the linear system in \eqref{eqfssol} is $(m+1) \times (m+1)$. Due to the fact that $m \ll n$, the CG iterations can be carried out locally once the matrices $A$ and $c$ are computed.
 
 \subsection*{Model Evaluation}
 
@@ -133,6 +135,8 @@ The fast v-fold cross-validation outlined by De Brabanter et.al. \cite{DeBrabant
 
 
 \subsubsection*{Performance Metrics}
+In order to compare different model instances, performance metrics must be computed during each v-fold cross validation task for each fold of the data. These performance metrics are then averaged over all folds to yield an average performance rating for a model instance with specified values of hyper-parameters and regularization. In \emph{FS-Scala} the classification accuracy, F1 score and ROC area are recorded during cross validation. Although only the value of ROC area is used to drive the global optimization procedure.
+
 Algorithm \ref{efmr} contains the implementation for calculating test set performance for each fold of test data. The true positive versus false positive curve is calculated on the test/validation fold provided and used to calculate the ROC area.
 
 \begin{algorithm}[!htbp]\label{efmr}

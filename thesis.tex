@@ -2,7 +2,7 @@
 \setup{title={Fixed Size Least Squares Support Vector Machines: A Scala based programming framework for Large Scale Classification},
   author={Mandar Chandorkar},
   promotor={Prof.\,dr.\,ir.\ Bart De Moor \and Prof.\,dr.\,ir.\ Johan A.K Suykens},
-  assessor={Ir.\,Kn. Owsmuch\and K. Nowsrest},
+  assessor={Dr. Raghvendra Mall},
   assistant={Oliver Lauwers \and Dr. Raghvendra Mall}}
 % The following \setup may be removed entirely if no filing card is wanted
 \setup{filingcard,
@@ -63,9 +63,8 @@
 
 \begin{preface}
   I would like to thank everybody who kept me busy the last year,
-  especially my promoter and my assistants. I would also like to thank the
-  jury for reading the text. My sincere gratitude also goes to my wife and
-  the rest of my family.
+  especially my promoter and my supervisors. I would also like to thank the
+  jury for reading the text. My sincere gratitude also goes to my family.
 \end{preface}
 
 \tableofcontents*
@@ -116,9 +115,12 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
     $Y$   & Vector of labels ${y_i \ \epsilon \ \{-1, 1\}}_{i = 1 \hdots n}$ for the training set $X$ \\
     $\mathfrak{D}_n$ & The training data set consisting of features and labels $(X, Y)$\\
     $\mathfrak{W}_m$ & Working set of size $m$ chosen from the training set $\mathfrak{D}_n$\\
+    $\mathcal{H}$ & Hilbert space\\
+    $<,>_{\mathcal{H}}$ & Inner product of the Hilbert space $\mathcal{H}$\\
+    $\mathcal{L}_p(C)$ & Hilbert space of $p$-integrable functions defined on a compact set $C$, having the associated norm $||f||_{\mathcal{L}_p} = (\int_{C}f^{p}d\mu(C))^{1/p}$\\
     $\gamma$ & Regularization parameter used in the LSSVM formulations outlined in equations \eqref{eqlssvm} and \eqref{eqfs}\\
     $K$ & Symmetric positive semi-definite Kernel Function of the form $\mathbb{R}^d \times \mathbb{R}^d \longrightarrow \mathbb{R}$ \\
-    
+    $\mathcal{T}$ & Integral operator of kernel function $K$\\
     $\Omega$ & Kernel matrix constructed from $\mathfrak{W}_m$, entries given by $[K(x_i, x_j)]_{m \times m}$\\
     
     $\hat{\phi}$ & Approximate feature map $\mathbb{R}^d \longrightarrow \mathbb{R}^m$ obtained from AFE on a the kernel matrix $\Omega$ \\
@@ -148,8 +150,8 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
 % If you have appendices:
 \appendixpage*          % if wanted
 \appendix
-\include{app-A}
 \include{app-2}
+\include{app-A}
 %\include{app-n}
 % ... and so on until
 \backmatter
