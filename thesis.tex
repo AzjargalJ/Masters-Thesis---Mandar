@@ -6,7 +6,7 @@
   assistant={Oliver Lauwers \and Dr. Raghvendra Mall}}
 % The following \setup may be removed entirely if no filing card is wanted
 \setup{filingcard,
-  translatedtitle=,
+  translatedtitle={Fixed Size Least Squares Support Vector Machines: Een Scala-gebaseerd programmeerkader voor classificatie op grote schaal.},
   udc=621.3,
   shortabstract={We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implementation of the Fixed Size Least Squares Support Vector Machine (FS-LSSVM) for large data sets. The framework consists of a set of modules for (gradient and gradient free) optimization, model representation, kernel functions and evaluation of FS-LSSVM models. A kernel based \textit{Fixed-Size Least Squares Support Vector Machine} (FS-LSSVM) model is implemented in the proposed framework, while heavily leveraging the parallel computing capabilities of \textit{Apache Spark}. Global optimization routines like \emph{Coupled Simulated Annealing} (CSA) and \emph{Grid Search} are implemented and used to tune the hyper-parameters of the FS-LSSVM model. Finally, we carry out experiments on benchmark data sets like \emph{Magic Gamma} and \emph{Adult} and evaluate the performance of various kernel based FS-LSSVM models.}}
 % Uncomment the next line for generating the cover page
@@ -62,9 +62,10 @@
 \begin{document}
 
 \begin{preface}
-  I would like to thank everybody who kept me busy the last year,
-  especially my promoter and my supervisors. I would also like to thank the
-  jury for reading the text. My sincere gratitude also goes to my family.
+  I would like to thank everybody who kept me motivated the last year,
+  especially my promoters and my supervisors. I would also like to thank the
+  jury for reading the text. My sincere gratitude also goes to my family and friends 
+  without whose support none of this would be possible.
 \end{preface}
 
 \tableofcontents*
@@ -87,6 +88,9 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
   \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
     SVM   & Support Vector Machine \\
     FS-LSSVM   & Fixed Size Least Squares Support Vector Machine \\
+    SPFS-LSSVM & Sparsified Primal FIxed Size Least Squares Support Vector Machine\\
+    SD-LSSVM & Sub-sampled Dual Least Squares Support Vector Machine\\
+    SSD-LSSVM & Sparsified Sub-sampled Dual Least Squares Support Vector Machine\\
     CG   & Conjugate Gradient \\
     L-BFGS & Limited Memory Broyden-Fletcher-Goldfarb-Shanno\\
     SGD & Stochastic Gradient Descent\\
@@ -113,6 +117,7 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
     $m$ & Number of prototypes selected\\
     $X $   & Training data ${x_i \ \epsilon \ \mathbb{R}^d}_{i = 1 \hdots n}$ \\
     $Y$   & Vector of labels ${y_i \ \epsilon \ \{-1, 1\}}_{i = 1 \hdots n}$ for the training set $X$ \\
+    $\mathcal{J}(w,b)$ & Lagrangian objective function constructed to solve the FS-LSSVM optimization problem\\
     $\mathfrak{D}_n$ & The training data set consisting of features and labels $(X, Y)$\\
     $\mathfrak{W}_m$ & Working set of size $m$ chosen from the training set $\mathfrak{D}_n$\\
     $\mathcal{H}$ & Hilbert space\\
@@ -130,8 +135,8 @@ We propose \textit{FS-Scala}, a flexible and modular \textit{Scala} based implem
 \vdots &  \ddots & \vdots & \vdots\\ 
 \hat{\phi}_{1}(x_n) & \cdots & \hat{\phi}_{m}(x_n) & 1
 \end{pmatrix}$ \\
-    $A$ & Matrix $\left (\hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma} \right )$ required for CG\\
-    $c$ & Vector $ \hat{\Phi}^{\intercal}_e Y$ required for CG\\
+    $A$ & Matrix $\left (\hat{\Phi}^{\intercal}_e \hat{\Phi}_e + \frac{\mathit{I}_{m+1}}{\gamma} \right )$ required for CG based training of the FS-LSSVM\\
+    $c$ & Vector $ \hat{\Phi}^{\intercal}_e Y$ required for CG based training of the FS-LSSVM\\
     $(\hat{w}, \hat{b})^T$ & Parameters of an FS-LSSVM model estimated from $A$ and $c$ \\
   \end{tabularx}
 \end{flushleft}

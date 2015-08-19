@@ -10,7 +10,7 @@ In chapter \ref{cha:n}, \emph{FS-Scala} is applied on a number of benchmark data
 
 \section*{Future Work}
 
-Further research/improvements on \emph{FS-Scala} can be done in two proposed directions.
+Further research/improvements on \emph{FS-Scala} can be carried out in a number of directions.
 
 \begin{itemize}
 \item Experiments of large scale commodity clusters:
@@ -22,4 +22,5 @@ During a particular v-fold cross validation operation only a single model instan
 \item Distributed FS-LSSVM committee models:
 An exciting area of further research is application of distributed programming methodology to the implementation of FS-LSSVM committee models. \emph{Apache Spark} inherently represents large data sets as sets distributed partitions, this can be used to train a FS-LSSVM committee model where each partition trains a local LSSVM model using only its local data. The models trained on each partition can now be used to train a weighted FS-LSSVM committee network.
 
+\item $L_0$ sparse extensions \cite{Mall2015,Mall2013} to the FS-LSSVM namely the SPFS-LSSVM and SSD-LSSVM may be considered for implementation in \emph{FS-Scala}, moreover the Sub-sampled Dual Least Squares Support Vector Machine (SD-LSSVM) is an attractive candidate for inclusion in \emph{FS-Scala} due to two reasons, firstly because it utilizes Quadratic R\'enyi Entropy driven subset selection (leading to re-use of existing implementation) and secondly because it is solved in the dual and does not require Automated Feature Extraction (AFE) using the Nystr\"om method. 
 \end{itemize}

@@ -98,9 +98,10 @@ In the above formulation, $\hat{\phi}(x_k)$ is an approximation to the true feat
  \While{termination of global optimization routine}{
   Initialize the kernel using the hyper-parameters.
   Do AFE on the kernel matrix constructed from the prototypes, using the Nystrom method\;
-  evaluate the cross validation score for the particular hyper-parameter values\;
+  \textbf{Train the resulting model}\;
+  evaluate the \textbf{cross validation score} for the particular hyper-parameter values\;
  }
  \caption{Tuning FS-LSSVM}
 \end{algorithm}
 
-Kernel based models are sensitive to hyper-parameters. In the case of FS-LSSVM we have to tune the model with respect to $\gamma$ the regularization parameter and the parameters of the kernel chosen. Models are generally compared with their cross-validation performance in which case the objective cost function with respect to the hyper-parameters is in general non-smooth and non-convex. Gradient free methods like Grid Search, Nelder Mead \cite{Nelder1965} and Coupled Simulated Annealing \cite{Xavier-De-Souza2010} are suitable to tackle the problem of model selection for FS-LSSVM based kernel models. Algorithm \ref{lssvmalgo} explains the steps involved in tuning the FS-LSSVM model with the bold part representing our contributions in this thesis, which have been implemented in a \textit{MapReduce} setting.
+Kernel based models are sensitive to hyper-parameters. In the case of FS-LSSVM we have to tune the model with respect to $\gamma$ the regularization parameter and the parameters of the kernel chosen. Models are generally compared with their cross-validation performance in which case the objective cost function with respect to the hyper-parameters is in general non-smooth and non-convex. Gradient free methods like Grid Search, Nelder Mead \cite{Nelder1965} and Coupled Simulated Annealing \cite{Xavier-De-Souza2010} are suitable to tackle the problem of model selection for FS-LSSVM based kernel models. Algorithm \ref{lssvmalgo} explains the steps involved in tuning the FS-LSSVM model with the bold part representing our contributions in this thesis, which have been implemented in the distributed \emph{MapReduce} environment of \emph{Apache Spark}.
